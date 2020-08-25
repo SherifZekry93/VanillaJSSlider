@@ -1,104 +1,116 @@
-const images = [...document.querySelectorAll(".slider-container img")];
-
-const sliderLength = images.length
-
-let currrentSlide = 1;
-
-const slideNumberElement = document.getElementById("slide-number");
-
-const next = document.getElementById("next");
-
-const pev = document.getElementById("prev");
-
-
-
-const indicators = document.getElementById("indicators");
-
-const pagination = document.createElement("ul");
-
-pagination.id ="pagination-ul";
-
-for(let i =1;i<=sliderLength;i++)
+const createSlider = (function()
 {
-    const li = document.createElement("li");
-    li.setAttribute("data-index",i);
-    li.appendChild(document.createTextNode(i))
-    pagination.appendChild(li);
-}
+    const images = [...document.querySelectorAll(".slider-container img")];
 
-indicators.appendChild(pagination);
+    const sliderLength = images.length
 
-const allLis = [...document.querySelectorAll("#pagination-ul li")]
+    let currrentSlide = 1;
 
-next.addEventListener("click",nextSlide);
+    const slideNumberElement = document.getElementById("slide-number");
 
-prev.addEventListener("click",prevSlide);
+    const next = document.getElementById("next");
 
+    const pev = document.getElementById("prev");
 
+    const indicators = document.getElementById("indicators");
 
-function nextSlide()
-{
-    if(currrentSlide !== sliderLength)
+    const pagination = createPaginationList();
+
+    pagination.id ="pagination-ul";
+
+    const allLis = [...document.querySelectorAll("#pagination-ul li")]
+    
+    
+    setButtonsClickEvent();
+    
+    setIndicatorsClickEvent();
+
+    setCurrentSlide();
+    function createPaginationList()
     {
-        currrentSlide++;
-        setCurrentSlide();
+        const ul = document.createElement("ul");
+        for(let i =1;i<=sliderLength;i++)
+        {
+            const li = document.createElement("li");
+            li.appendChild(document.createTextNode(i))
+            ul.appendChild(li);
+        }
+        indicators.appendChild(ul);
+        return ul
     }
-}
 
-function prevSlide()
-{
-    if(currrentSlide !== 1)
+
+    function setButtonsClickEvent()
     {
-        currrentSlide--;
-        setCurrentSlide();
+        next.addEventListener("click",nextSlide);
+        prev.addEventListener("click",prevSlide);    
     }
-}
 
-function paginationIndicators()
-{
-    allLis.forEach(element => {
-        element.addEventListener("click",function(){
-            currrentSlide = parseInt(this.textContent);
+
+    function nextSlide()
+    {
+        if(currrentSlide !== sliderLength)
+        {
+            currrentSlide++;
             setCurrentSlide();
-        })
-    });
-}
+        }
+    }
 
-setCurrentSlide();
-paginationIndicators();
-function setCurrentSlide()
-{
-    slideNumberElement.textContent = `Slide #${currrentSlide} of ${sliderLength}`;
-    removeAllActiveClasses();
-    setButtonsDisabledClasses();
-    images[currrentSlide - 1].classList.add("active");
-    allLis[currrentSlide - 1].classList.add("active");
-}
-function removeAllActiveClasses()
-{
+    function prevSlide()
+    {
+        if(currrentSlide !== 1)
+        {
+            currrentSlide--;
+            setCurrentSlide();
+        }
+    }
 
-    for(let i =0;i<sliderLength;i++)
-    {      
-        images[i].classList.remove("active");
-        allLis[i].classList.remove("active");
-    }
-}
-function setButtonsDisabledClasses()
-{
-    if(currrentSlide == 1)
+    function setIndicatorsClickEvent()
     {
-        prev.classList.add("disabled")
+        allLis.forEach(element => {
+            element.addEventListener("click",function(){
+                currrentSlide = parseInt(this.textContent);
+                setCurrentSlide();
+            })
+        });
     }
-    else
+
+  
+    function setCurrentSlide()
     {
-        prev.classList.remove("disabled");
+        slideNumberElement.textContent = `Slide #${currrentSlide} of ${sliderLength}`;
+        removeAllActiveClasses();
+        setButtonsState();
+        images[currrentSlide - 1].classList.add("active");
+        allLis[currrentSlide - 1].classList.add("active");
     }
-    if(currrentSlide == images.length)
+    function removeAllActiveClasses()
     {
-        next.classList.add("disabled")
+        for(let i =0;i<sliderLength;i++)
+        {      
+            images[i].classList.remove("active");
+            allLis[i].classList.remove("active");
+        }
     }
-    else
+    function setButtonsState()
     {
-        next.classList.remove("disabled");
+        if(currrentSlide == 1)
+        {
+            prev.classList.add("disabled")
+        }
+        else
+        {
+            prev.classList.remove("disabled");
+        }
+        if(currrentSlide == images.length)
+        {
+            next.classList.add("disabled")
+        }
+        else
+        {
+            next.classList.remove("disabled");
+        }
     }
-}
+
+});
+createSlider()
